@@ -1,26 +1,14 @@
 # react-native-echart-x5
 
-echart in react-native platform , android use tecent x5 browser core , ios use react-native-webview library
+echart in react-native platform , the webview core have different implement in a different platform :
 
-## Installation
+* android use tecent x5 browser core
+* ios use react-native-webview library
 
-```sh
-npm install react-native-echart-x5
-```
 
-## Usage
+current echart version is :
+5.0.2
 
-```js
-import EchartX5 from "react-native-echart-x5";
-
-// ...
-
-const result = await EchartX5.multiply(3, 7);
-```
-
-## Contributing
-
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
 
 ## License
 
