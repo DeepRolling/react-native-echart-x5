@@ -1,6 +1,6 @@
 {
   "name": "react-native-echart-x5",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "echart in react-native platform , android use tecent x5 browser core , ios use react-native-webview library",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

@@ -14,7 +14,7 @@ export function AndroidChartX5Webview(props: {
 
   const onLoadEnd = () => {
     console.log(
-      'tecent x5 browser load initialize html : ' + props.echartConfig
+      'tecent x5 browser load initialize html : ' +  JSON.stringify(props.echartConfig.options)
     );
     chart.current?.injectJavaScript(renderChart(props.echartConfig));
 

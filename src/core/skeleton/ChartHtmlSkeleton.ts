@@ -1,7 +1,6 @@
+import echarts from '.././echarts.min'; // echarts.min文件引入
 // @ts-ignore
-import echarts from './echarts.min'; // echarts.min文件引入
-// @ts-ignore
-import { Theme } from './../theme/index'; // 主题文件引入
+import { Theme } from '.././../theme/index'; // 主题文件引入
 export const HtmlTemplate = `<!DOCTYPE html>
         <html>
         <head>

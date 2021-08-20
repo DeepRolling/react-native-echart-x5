@@ -68,7 +68,7 @@ export type CustomWebViewMessage = {
 
 export function renderChart(props: EchartConfig) {
   return `
-    function generatedWebViewMessage(type: WebViewMessageTYpe, value: string) {
+    function generatedWebViewMessage(type,value) {
       const messageObj = {
         type,
         value,

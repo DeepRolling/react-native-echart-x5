@@ -16,6 +16,7 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noImplicitUseStrict": false,
+    "noImplicitAny": false,
     "noStrictGenericChecks": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
