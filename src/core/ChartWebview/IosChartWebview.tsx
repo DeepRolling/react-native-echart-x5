@@ -17,10 +17,8 @@ export function IosChartWebview(props: {
       'react-native native browser load initialize html : ' + props.echartConfig
     );
     chart.current?.injectJavaScript(renderChart(props.echartConfig));
-    setTimeout(() => {
-      props.onLoadFinish?.();
-      loadFinishTag.current = true;
-    }, 500);
+    props.onLoadFinish?.();
+    loadFinishTag.current = true;
   };
 
   const loadFinishTag = useRef<boolean>(false);

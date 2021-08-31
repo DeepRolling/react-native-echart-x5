@@ -17,11 +17,8 @@ export function AndroidChartX5Webview(props: {
       'tecent x5 browser load initialize html : ' +  JSON.stringify(props.echartConfig.options)
     );
     chart.current?.injectJavaScript(renderChart(props.echartConfig));
-
-    setTimeout(() => {
-      props.onLoadFinish?.();
-      loadFinishTag.current = true;
-    }, 500);
+    props.onLoadFinish?.();
+    loadFinishTag.current = true;
   };
 
   const loadFinishTag = useRef<boolean>(false);
