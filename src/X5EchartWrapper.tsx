@@ -35,6 +35,37 @@ export type X5EchartPropsWithCallback<TSeries = EChartOption.Series> = {
    * @param data
    */
   onPress?: (data: any) => void;
+
+  /**
+   * you can't add function to echart options , because function can't be serialized
+   * only pure javascript object can be serialized and passed between js-code and native-code through JsBridge
+   * so if you have some function need to supply to echart options , use this function return a js function formatted by string
+   * for example :
+   * onExecuteJavascritFunction={()=>{
+                const customToolTipScript = `
+                      myChart.setOption(
+                        {
+                            tooltip:{
+                                 show: true,
+                                 trigger: 'axis',
+                                 formatter: function (params, ticket, callback) {
+                                    try{
+                                        let yAxisValue = params[0].data[1];
+                                        yAxisValue = yAxisValue.toFixed(2);
+                                        return params[0].data[0] + '</br>' + yAxisValue + '${props.dataUnit}';
+                                    }catch(e){
+                                        console.log('EChartBarChart (error when inject toolkit function) : ' + e.toString());
+                                    }
+                                 }
+                            }
+                        },
+                        {replaceMerge: ['tooltip']}
+                      )
+                `
+                return customToolTipScript
+            }}
+   */
+  onExecuteJavascriptFunction?: () => string;
 };
 
 export function X5EchartWrapper<TSeries = EChartOption.Series>(
@@ -79,6 +110,7 @@ export function X5EchartWrapper<TSeries = EChartOption.Series>(
             setWaringBarChartLoadFinish(true);
           }}
           onMessage={onMessage}
+          onExecuteJavascriptFunction={props.onExecuteJavascriptFunction}
         />
       ) : (
         <IosChartWebview
@@ -87,6 +119,7 @@ export function X5EchartWrapper<TSeries = EChartOption.Series>(
             setWaringBarChartLoadFinish(true);
           }}
           onMessage={onMessage}
+          onExecuteJavascriptFunction={props.onExecuteJavascriptFunction}
         />
       )}
       {waringBarChartLoadFinish && props.optionAlreadyFillData ? null : (

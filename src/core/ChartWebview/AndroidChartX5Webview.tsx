@@ -9,14 +9,20 @@ export function AndroidChartX5Webview(props: {
   androidHardwareAccelerationDisabled?: boolean;
   onLoadFinish?: () => void;
   onMessage?: (event: WebViewMessageEvent) => void;
+  onExecuteJavascriptFunction?: () => string;
 }) {
   const chart = useRef<RNWebView>(null);
 
   const onLoadEnd = () => {
     console.log(
-      'tecent x5 browser load initialize html : ' +  JSON.stringify(props.echartConfig.options)
+      'tecent x5 browser load initialize html : ' +
+        JSON.stringify(props.echartConfig.options)
     );
     chart.current?.injectJavaScript(renderChart(props.echartConfig));
+    //inject cutsom jave script function
+    if (props.onExecuteJavascriptFunction !== undefined) {
+      chart.current?.injectJavaScript(props.onExecuteJavascriptFunction());
+    }
     props.onLoadFinish?.();
     loadFinishTag.current = true;
   };
@@ -32,6 +38,10 @@ export function AndroidChartX5Webview(props: {
       //fuck the reload and the damned blank screen , get work-around by manipulate DOM in html + use loading for first launch
       // chart.current?.reload();
       chart.current?.postMessage(JSON.stringify(props.echartConfig.options));
+      //inject cutsom jave script function
+      if (props.onExecuteJavascriptFunction !== undefined) {
+        chart.current?.injectJavaScript(props.onExecuteJavascriptFunction());
+      }
     }
   }, [props.echartConfig]);
 

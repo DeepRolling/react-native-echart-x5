@@ -9,6 +9,7 @@ export function IosChartWebview(props: {
   androidHardwareAccelerationDisabled?: boolean;
   onLoadFinish?: () => void;
   onMessage?: (event: WebViewMessageEvent) => void;
+  onExecuteJavascriptFunction?: () => string;
 }) {
   const chart = useRef<RNWebView>(null);
 
@@ -17,6 +18,10 @@ export function IosChartWebview(props: {
       'react-native native browser load initialize html : ' + props.echartConfig
     );
     chart.current?.injectJavaScript(renderChart(props.echartConfig));
+    //inject cutsom jave script function
+    if (props.onExecuteJavascriptFunction !== undefined) {
+      chart.current?.injectJavaScript(props.onExecuteJavascriptFunction());
+    }
     props.onLoadFinish?.();
     loadFinishTag.current = true;
   };
@@ -32,6 +37,10 @@ export function IosChartWebview(props: {
       //fuck the reload and the damned blank screen , get work-around by manipulate DOM in html + use loading for first launch
       // chart.current?.reload();
       chart.current?.postMessage(JSON.stringify(props.echartConfig.options));
+      //inject cutsom jave script function
+      if (props.onExecuteJavascriptFunction !== undefined) {
+        chart.current?.injectJavaScript(props.onExecuteJavascriptFunction());
+      }
     }
   }, [props.echartConfig]);
 
