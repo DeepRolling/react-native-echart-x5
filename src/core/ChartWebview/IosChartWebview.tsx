@@ -1,28 +1,37 @@
 import React, { useEffect, useRef } from 'react';
 import { WebView as RNWebView } from 'react-native-webview';
 import { renderChart, EchartConfig } from '../TemplateGenerator';
-import type { WebViewMessageEvent } from 'react-native-webview-tencentx5/lib/WebViewTypes';
+import type { WebViewMessageEvent } from 'react-native-webview-tencentx5-fix';
 import { HtmlTemplate } from '../skeleton/ChartHtmlSkeleton';
 
 export function IosChartWebview(props: {
   echartConfig: EchartConfig;
-  androidHardwareAccelerationDisabled?: boolean;
   onLoadFinish?: () => void;
   onMessage?: (event: WebViewMessageEvent) => void;
   onExecuteJavascriptFunction?: () => string;
+  debugMode?: boolean;
 }) {
   const chart = useRef<RNWebView>(null);
+  const {
+    debugMode,
+    echartConfig,
+    onExecuteJavascriptFunction,
+    onLoadFinish,
+    onMessage,
+  } = props;
 
   const onLoadEnd = () => {
-    console.log(
-      'react-native native browser load initialize html : ' + props.echartConfig
-    );
-    chart.current?.injectJavaScript(renderChart(props.echartConfig));
-    //inject cutsom jave script function
-    if (props.onExecuteJavascriptFunction !== undefined) {
-      chart.current?.injectJavaScript(props.onExecuteJavascriptFunction());
+    if (debugMode) {
+      console.log(
+        'react-native native browser load initialize html : ' + echartConfig
+      );
     }
-    props.onLoadFinish?.();
+    chart.current?.injectJavaScript(renderChart(echartConfig));
+    //inject cutsom jave script function
+    if (onExecuteJavascriptFunction !== undefined) {
+      chart.current?.injectJavaScript(onExecuteJavascriptFunction());
+    }
+    onLoadFinish?.();
     loadFinishTag.current = true;
   };
 
@@ -30,19 +39,21 @@ export function IosChartWebview(props: {
 
   useEffect(() => {
     if (loadFinishTag.current) {
-      console.log(
-        'react-native native browser dispatch newest html after load finish : ' +
-          props.echartConfig
-      );
+      if (debugMode) {
+        console.log(
+          'react-native native browser dispatch newest html after load finish : ' +
+            echartConfig
+        );
+      }
       //fuck the reload and the damned blank screen , get work-around by manipulate DOM in html + use loading for first launch
       // chart.current?.reload();
-      chart.current?.postMessage(JSON.stringify(props.echartConfig.options));
+      chart.current?.postMessage(JSON.stringify(echartConfig.options));
       //inject cutsom jave script function
-      if (props.onExecuteJavascriptFunction !== undefined) {
-        chart.current?.injectJavaScript(props.onExecuteJavascriptFunction());
+      if (onExecuteJavascriptFunction !== undefined) {
+        chart.current?.injectJavaScript(onExecuteJavascriptFunction());
       }
     }
-  }, [props.echartConfig]);
+  }, [echartConfig]);
 
   return (
     <RNWebView
@@ -53,11 +64,8 @@ export function IosChartWebview(props: {
         opacity: 0.99,
         backgroundColor: 'transparent',
       }}
-      androidHardwareAccelerationDisabled={
-        props.androidHardwareAccelerationDisabled === true
-      }
       scrollEnabled={false}
-      onMessage={props.onMessage}
+      onMessage={onMessage}
       scalesPageToFit
       javaScriptEnabled
       ref={chart}

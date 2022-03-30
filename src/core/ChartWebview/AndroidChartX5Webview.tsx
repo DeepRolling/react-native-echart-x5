@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { WebView as RNWebView } from 'react-native-webview-tencentx5';
+import {
+  WebView as RNWebView,
+  WebViewMessageEvent,
+} from 'react-native-webview-tencentx5-fix';
 import { renderChart, EchartConfig } from '../TemplateGenerator';
-import type { WebViewMessageEvent } from 'react-native-webview-tencentx5/lib/WebViewTypes';
 import { HtmlTemplate } from '../skeleton/ChartHtmlSkeleton';
 
 export function AndroidChartX5Webview(props: {
@@ -10,20 +12,32 @@ export function AndroidChartX5Webview(props: {
   onLoadFinish?: () => void;
   onMessage?: (event: WebViewMessageEvent) => void;
   onExecuteJavascriptFunction?: () => string;
+  debugMode?: boolean;
 }) {
   const chart = useRef<RNWebView>(null);
+  const {
+    androidHardwareAccelerationDisabled,
+    debugMode,
+    echartConfig,
+    onExecuteJavascriptFunction,
+    onLoadFinish,
+    onMessage,
+  } = props;
 
   const onLoadEnd = () => {
-    console.log(
-      'tecent x5 browser load initialize html : ' +
-        JSON.stringify(props.echartConfig.options)
-    );
-    chart.current?.injectJavaScript(renderChart(props.echartConfig));
-    //inject cutsom jave script function
-    if (props.onExecuteJavascriptFunction !== undefined) {
-      chart.current?.injectJavaScript(props.onExecuteJavascriptFunction());
+    if (debugMode) {
+      console.log(
+        'tecent x5 browser load initialize html : ' +
+          JSON.stringify(echartConfig.options)
+      );
     }
-    props.onLoadFinish?.();
+
+    chart.current?.injectJavaScript(renderChart(echartConfig));
+    //inject cutsom jave script function
+    if (onExecuteJavascriptFunction !== undefined) {
+      chart.current?.injectJavaScript(onExecuteJavascriptFunction());
+    }
+    onLoadFinish?.();
     loadFinishTag.current = true;
   };
 
@@ -31,19 +45,21 @@ export function AndroidChartX5Webview(props: {
 
   useEffect(() => {
     if (loadFinishTag.current) {
-      console.log(
-        'tecent x5 browser dispatch newest html after load finish : ' +
-          JSON.stringify(props.echartConfig.options)
-      );
+      if (debugMode) {
+        console.log(
+          'tecent x5 browser dispatch newest html after load finish : ' +
+            JSON.stringify(echartConfig.options)
+        );
+      }
       //fuck the reload and the damned blank screen , get work-around by manipulate DOM in html + use loading for first launch
       // chart.current?.reload();
-      chart.current?.postMessage(JSON.stringify(props.echartConfig.options));
+      chart.current?.postMessage(JSON.stringify(echartConfig.options));
       //inject cutsom jave script function
-      if (props.onExecuteJavascriptFunction !== undefined) {
-        chart.current?.injectJavaScript(props.onExecuteJavascriptFunction());
+      if (onExecuteJavascriptFunction !== undefined) {
+        chart.current?.injectJavaScript(onExecuteJavascriptFunction());
       }
     }
-  }, [props.echartConfig]);
+  }, [echartConfig]);
 
   return (
     <RNWebView
@@ -55,10 +71,10 @@ export function AndroidChartX5Webview(props: {
         backgroundColor: 'transparent',
       }}
       androidHardwareAccelerationDisabled={
-        props.androidHardwareAccelerationDisabled === true
+        androidHardwareAccelerationDisabled === true
       }
       scrollEnabled={false}
-      onMessage={props.onMessage}
+      onMessage={onMessage}
       scalesPageToFit
       javaScriptEnabled
       ref={chart}

@@ -6,7 +6,7 @@ import type {
   CustomWebViewMessage,
   EchartConfig,
 } from './core/TemplateGenerator';
-import type { WebViewMessageEvent } from 'react-native-webview-tencentx5/lib/WebViewTypes';
+import type { WebViewMessageEvent } from 'react-native-webview-tencentx5-fix';
 import { WebViewMessageTYpe } from './core/TemplateGenerator';
 import type { EChartOption } from 'echarts';
 
@@ -66,6 +66,10 @@ export type X5EchartPropsWithCallback<TSeries = EChartOption.Series> = {
             }}
    */
   onExecuteJavascriptFunction?: () => string;
+  /**
+   * pass true to get Echart log print
+   */
+  debugMode?: boolean;
 };
 
 export function X5EchartWrapper<TSeries = EChartOption.Series>(
@@ -73,6 +77,15 @@ export function X5EchartWrapper<TSeries = EChartOption.Series>(
 ) {
   const [waringBarChartLoadFinish, setWaringBarChartLoadFinish] =
     useState<boolean>(false);
+  const {
+    customLoadingView,
+    debugMode,
+    echartConfig,
+    onDataZoom,
+    onExecuteJavascriptFunction,
+    onPress,
+    optionAlreadyFillData,
+  } = props;
 
   /**
    * when webview send message to native (message have a custom wrapper)
@@ -85,13 +98,13 @@ export function X5EchartWrapper<TSeries = EChartOption.Series>(
     ) as CustomWebViewMessage;
     switch (webviewMessage.type) {
       case WebViewMessageTYpe.DATA_ZOOM:
-        props.onDataZoom?.(webviewMessage.value);
+        onDataZoom?.(webviewMessage.value);
         break;
       case WebViewMessageTYpe.LOG:
-        console.log('Echart Log : ' + webviewMessage.value);
+        debugMode && console.log('Echart Log : ' + webviewMessage.value);
         break;
       case WebViewMessageTYpe.CLICK:
-        props.onPress?.(JSON.parse(webviewMessage.value));
+        onPress?.(JSON.parse(webviewMessage.value));
         break;
     }
   };
@@ -99,35 +112,37 @@ export function X5EchartWrapper<TSeries = EChartOption.Series>(
   return (
     <View
       style={{
-        width: props.echartConfig.width,
-        height: props.echartConfig.height,
+        width: echartConfig.width,
+        height: echartConfig.height,
       }}
     >
       {Platform.OS !== 'ios' ? (
         <AndroidChartX5Webview
-          echartConfig={props.echartConfig}
+          echartConfig={echartConfig}
           onLoadFinish={() => {
             setWaringBarChartLoadFinish(true);
           }}
           onMessage={onMessage}
-          onExecuteJavascriptFunction={props.onExecuteJavascriptFunction}
+          debugMode={debugMode}
+          onExecuteJavascriptFunction={onExecuteJavascriptFunction}
         />
       ) : (
         <IosChartWebview
-          echartConfig={props.echartConfig}
+          echartConfig={echartConfig}
           onLoadFinish={() => {
             setWaringBarChartLoadFinish(true);
           }}
           onMessage={onMessage}
-          onExecuteJavascriptFunction={props.onExecuteJavascriptFunction}
+          debugMode={debugMode}
+          onExecuteJavascriptFunction={onExecuteJavascriptFunction}
         />
       )}
-      {waringBarChartLoadFinish && props.optionAlreadyFillData ? null : (
+      {waringBarChartLoadFinish && optionAlreadyFillData ? null : (
         <View
           style={{
             width: '100%',
             height: '100%',
-            backgroundColor: props.echartConfig.backgroundColor,
+            backgroundColor: echartConfig.backgroundColor,
             position: 'absolute',
             top: 0,
             justifyContent: 'center',
@@ -135,8 +150,8 @@ export function X5EchartWrapper<TSeries = EChartOption.Series>(
             zIndex: 999,
           }}
         >
-          {props.customLoadingView !== undefined ? (
-            props.customLoadingView
+          {customLoadingView !== undefined ? (
+            customLoadingView
           ) : (
             <ActivityIndicator color={'black'} size={200} />
           )}

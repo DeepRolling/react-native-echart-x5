@@ -7810,10 +7810,10 @@ react-native-builder-bob@^0.18.0:
   optionalDependencies:
     jetifier "^1.6.6"
 
-react-native-webview-tencentx5@^1.0.4:
+react-native-webview-tencentx5-fix@^1.0.4:
   version "1.0.4"
-  resolved "http://192.168.1.198:4873/react-native-webview-tencentx5/-/react-native-webview-tencentx5-1.0.4.tgz#ded3ebcad92ff50d215a5b02e2355169f61fc8c4"
-  integrity sha512-+L+YHLyZqfAiNlSE7wmZe80XVPUfUqjX4b+XfaD+PGQnvzvjkfjejoc39N1N+3H+JjTyrZjWVAzqoXKy4YfaoA==
+  resolved "https://registry.yarnpkg.com/react-native-webview-tencentx5-fix/-/react-native-webview-tencentx5-fix-1.0.4.tgz#2341fdb1fa5ad7097989743572b9110655593e3b"
+  integrity sha512-YLsbjNvzIM07dHaI6iARvwjp72O1v3BeqbIxOTWpI4NQQT5WR7Byy9Hm1Pugx+3YAE0GHEvBYiJpUcfeC8HRHg==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
